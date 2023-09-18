@@ -1,0 +1,64 @@
+{
+  "name": "dick-tg-bot",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "dick-tg-bot/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/dick-tg-bot",
+        "main": "dick-tg-bot/src/main.ts",
+        "tsConfig": "dick-tg-bot/tsconfig.app.json",
+        "assets": ["dick-tg-bot/src/assets"],
+        "isolatedConfig": true,
+        "webpackConfig": "dick-tg-bot/webpack.config.js"
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "dick-tg-bot:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "dick-tg-bot:build:development"
+        },
+        "production": {
+          "buildTarget": "dick-tg-bot:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["dick-tg-bot/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "dick-tg-bot/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    }
+  },
+  "tags": []
+}
