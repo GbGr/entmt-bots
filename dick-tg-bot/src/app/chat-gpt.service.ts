@@ -16,6 +16,8 @@ export class ChatGptService {
   }
 
   public async simplePrompt(prompt: string, model: ChatCompletionCreateParamsBase['model'] = 'gpt-3.5-turbo') {
+    console.log('simplePrompt', prompt);
+
     const chatCompletion = await this._openAi.chat.completions.create({
       messages: [
         {
