@@ -20,20 +20,20 @@ export class DickBotService {
   @Command('measure')
   public async measure(@Ctx() ctx: Scenes.SceneContext) {
     const user = ctx.from!;
-    const waitMessage = await createWaitMessage(ctx);
+    await createWaitMessage(ctx);
     const todayUserMeasurement = await this._dickMeasurementService.getTodayUserMeasurement(user);
 
-    // if (todayUserMeasurement) {
-    //   await ctx.telegram.editMessageText(ctx.chat!.id, waitMessage.message_id, undefined, `Замер уже был произведён, результат ${todayUserMeasurement.result}см`);
-    //   return;
-    // }
+    if (todayUserMeasurement) {
+      await ctx.reply(`Замер уже был произведён, результат ${todayUserMeasurement.result}см`);
+      return;
+    }
 
     const userMeasurement = await this._dickMeasurementService.measure(user);
     const dickUser = await this._dickUserService.updateUserResult(user, userMeasurement);
     const resultText = await this._chatGptService.simplePrompt(newResultPrompt(userMeasurement.result));
     const text = `*Результат замера [${escapeMarkdown(user.first_name || user.username || '')}](tg://user?id=${user.id}): ${userMeasurement.result}см*\n\`Средний результат: ${escapeMarkdown(String(dickUser.avgResult))}\`\n\n_${escapeMarkdown(resultText)}_`;
 
-    await ctx.telegram.editMessageText(ctx.chat!.id, waitMessage.message_id, undefined, {
+    await ctx.reply({
       parse_mode: 'MarkdownV2',
       text,
     } as any);
