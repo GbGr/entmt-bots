@@ -55,9 +55,9 @@ export class DickBotService {
     const text = todayTop
       .sort((a, b) => b.result - a.result)
       .map(({
-        result,
-        uid,
-      }, idx) => `*${idx + 1}\\.* [${topDickUsersMap.get(uid)!.fullName}](tg://user?id=${uid}) ${result}см`).join('\n')
+              result,
+              uid,
+            }, idx) => `*${idx + 1}\\.* [${topDickUsersMap.get(uid)!.fullName}](tg://user?id=${uid}) ${result}см`).join('\n');
 
     await ctx.reply({
       parse_mode: 'MarkdownV2',
@@ -69,7 +69,7 @@ export class DickBotService {
   public async overall(@Ctx() ctx: Scenes.SceneContext) {
     const waitMessage = await createWaitMessage(ctx);
     const users = await this._dickUserService.getAllDickUsers();
-    const answer = await this._chatGptService.simplePrompt(overviewPrompt(users))
+    const answer = await this._chatGptService.simplePrompt(overviewPrompt(users), 'gpt-4');
     const data = parseCsv(answer);
 
     try {
@@ -80,6 +80,8 @@ export class DickBotService {
         text,
       } as any);
     } catch (e) {
+      console.log({ answer, data });
+      console.error(e);
       await ctx.telegram.editMessageText(ctx.chat!.id, waitMessage.message_id, undefined, {
         parse_mode: 'MarkdownV2',
         text: escapeMarkdown(`Ой-ой, кажется, мои датчики перегрелись от ваших амбиций! Попробуйте снова, но без фантазий!`),
